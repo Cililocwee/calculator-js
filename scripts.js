@@ -4,6 +4,7 @@ const calculator = {
     secondOperand: null,
     endResult: null,
     operator: null,
+    awaitingSecond: false,
 };
 
 function changeDisplay(){
@@ -26,8 +27,14 @@ keys.addEventListener('click', (event) => {
     }
 
     if (target.classList.contains('operator')) {
+        if (calculator.awaitingSecond === true) {
+            equalOut();
+            changeDisplay();
+        }
+        calculator.awaitingSecond = true;
         callOperator(target.value);
         console.log(calculator);
+        
         return;
     }
 
@@ -40,43 +47,23 @@ keys.addEventListener('click', (event) => {
     if (target.classList.contains('all-clear')) {
         clearAll();
         changeDisplay();
-        //check back and clear operand as well
         return;
     }
 
     if (target.classList.contains('equals')) {
-        switch (calculator.operator) {
-            case '+':
-                calculator.secondOperand = calculator.displayValue;    
-                add(calculator.firstOperand, calculator.secondOperand);
-                calculator.displayValue = calculator.endResult;
-
-                break;
-            case '-':
-                calculator.secondOperand = calculator.displayValue;    
-                subtract(calculator.firstOperand, calculator.secondOperand);
-                calculator.displayValue = calculator.endResult;
-                break;
-            case '*':
-                calculator.secondOperand = calculator.displayValue;    
-                multiply(calculator.firstOperand, calculator.secondOperand);
-                calculator.displayValue = calculator.endResult;
-                break;
-            case '/':
-                calculator.secondOperand = calculator.displayValue;    
-                divide(calculator.firstOperand, calculator.secondOperand);
-                calculator.displayValue = calculator.endResult;
-                break;    
-        }
-        //console.log(calculator.displayValue);
-        calculator.operator = null; 
+        equalOut();
         // I'm not sure if this is the right thing. Note to self: the first time you 
         // press enter, if you try to enter in more numbers, it appends it to the
         // previous end result. It should hard reset upon entering any more numbers
+        changeDisplay();
     }
 
-    inputDigits(target.value);
-    changeDisplay();
+    if (target.classList.contains('number-key')){
+        inputDigits(target.value);
+        changeDisplay();
+    }
+    
+    //calculator.displayValue = 0;
 });
 
 // clearAll needs to set all properties of the calculator object to default
@@ -86,14 +73,38 @@ function clearAll(){
     calculator.operator = null;
     calculator.secondOperand = null;
     calculator.endResult = null;
+    calculator.awaitingSecond = false;
+}
+
+function equalOut(){
+    calculator.secondOperand = calculator.displayValue;
+        
+        switch (calculator.operator) {
+            case '+':  
+                add(calculator.firstOperand, calculator.secondOperand);
+                break;
+            case '-': 
+                subtract(calculator.firstOperand, calculator.secondOperand);
+                break;
+            case '*':   
+                multiply(calculator.firstOperand, calculator.secondOperand);
+                break;
+            case '/':  
+                divide(calculator.firstOperand, calculator.secondOperand);
+                break;    
+        }
+        calculator.displayValue = calculator.endResult;
+        calculator.operator = null;
+        calculator.firstOperand = null;
+        changeDisplay(); 
+        console.log(calculator);
 }
 
 function inputDigits(digit) {
     const { displayValue } = calculator;
     // overwrite 'displayValue' if the current value is '0' otherwise append to it
-    calculator.displayValue = displayValue === '0' ? digit: displayValue + digit;
-    console.log(calculator);
-    
+    calculator.displayValue = displayValue === '0'? digit: displayValue + digit;   
+    console.log(calculator);    
 }
 
 function inputDecimal(dot) {
@@ -105,12 +116,9 @@ function inputDecimal(dot) {
 }
 
 function callOperator (op) {
-        //console.log(calculator.operator); // debugging
         calculator.operator = op;
-        //console.log(calculator.operator);
         calculator.firstOperand = calculator.displayValue;
         calculator.displayValue = '0';
-        //console.log(calculator.firstOperand);
 }
 
 // operations below this point
