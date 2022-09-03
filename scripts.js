@@ -13,6 +13,7 @@ function changeDisplay(){
 
 changeDisplay();
 
+// need to select all the keys and add eventListeners to the whole lot
 const keys = document.querySelector('.calculator-keys');
 keys.addEventListener('click', (event) => {
     // access the clicked element
@@ -78,6 +79,7 @@ keys.addEventListener('click', (event) => {
     changeDisplay();
 });
 
+// clearAll needs to set all properties of the calculator object to default
 function clearAll(){
     calculator.displayValue = '0';
     calculator.firstOperand = null;
@@ -90,10 +92,6 @@ function inputDigits(digit) {
     const { displayValue } = calculator;
     // overwrite 'displayValue' if the current value is '0' otherwise append to it
     calculator.displayValue = displayValue === '0' ? digit: displayValue + digit;
-    /*if (displayValue === '0'){
-        return digit;
-    } else {
-        return displayValue + digit}*/
     console.log(calculator);
     
 }
@@ -114,7 +112,6 @@ function callOperator (op) {
         calculator.displayValue = '0';
         //console.log(calculator.firstOperand);
 }
-
 
 // operations below this point
 function add(a,b){
